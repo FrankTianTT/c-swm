@@ -15,7 +15,7 @@ torch.backends.cudnn.deterministic = True
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--save-folder', type=str,
-                    default='checkpoints',
+                    default='checkpoints/shapes',
                     help='Path to checkpoints.')
 parser.add_argument('--num-steps', type=int, default=1,
                     help='Number of prediction steps to evaluate.')

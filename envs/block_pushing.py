@@ -8,13 +8,13 @@ from gym import spaces
 from gym.utils import seeding
 
 import matplotlib as mpl
+
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from PIL import Image
 
-
-import skimage
+import skimage.draw
 
 
 def square(r0, c0, width, im_size):
@@ -23,7 +23,7 @@ def square(r0, c0, width, im_size):
 
 
 def triangle(r0, c0, width, im_size):
-    rr, cc = [r0, r0 + width, r0 + width], [c0 + width//2, c0, c0 + width]
+    rr, cc = [r0, r0 + width, r0 + width], [c0 + width // 2, c0, c0 + width]
     return skimage.draw.polygon(rr, cc, im_size)
 
 
@@ -108,26 +108,26 @@ class BlockPushing(gym.Env):
                 im[:, pos[0], pos[1]] = self.colors[idx][:3]
             return im
         elif self.render_type == 'circles':
-            im = np.zeros((self.width*10, self.height*10, 3), dtype=np.float32)
+            im = np.zeros((self.width * 10, self.height * 10, 3), dtype=np.float32)
             for idx, pos in enumerate(self.objects):
                 rr, cc = skimage.draw.circle(
-                    pos[0]*10 + 5, pos[1]*10 + 5, 5, im.shape)
+                    pos[0] * 10 + 5, pos[1] * 10 + 5, 5, im.shape)
                 im[rr, cc, :] = self.colors[idx][:3]
             return im.transpose([2, 0, 1])
         elif self.render_type == 'shapes':
-            im = np.zeros((self.width*10, self.height*10, 3), dtype=np.float32)
+            im = np.zeros((self.width * 10, self.height * 10, 3), dtype=np.float32)
             for idx, pos in enumerate(self.objects):
                 if idx % 3 == 0:
                     rr, cc = skimage.draw.circle(
-                        pos[0]*10 + 5, pos[1]*10 + 5, 5, im.shape)
+                        pos[0] * 10 + 5, pos[1] * 10 + 5, 5, im.shape)
                     im[rr, cc, :] = self.colors[idx][:3]
                 elif idx % 3 == 1:
                     rr, cc = triangle(
-                        pos[0]*10, pos[1]*10, 10, im.shape)
+                        pos[0] * 10, pos[1] * 10, 10, im.shape)
                     im[rr, cc, :] = self.colors[idx][:3]
                 else:
                     rr, cc = square(
-                        pos[0]*10, pos[1]*10, 10, im.shape)
+                        pos[0] * 10, pos[1] * 10, 10, im.shape)
                     im[rr, cc, :] = self.colors[idx][:3]
             return im.transpose([2, 0, 1])
         elif self.render_type == 'cubes':
@@ -206,4 +206,20 @@ class BlockPushing(gym.Env):
 
         state_obs = (self.get_state(), self.render())
 
-        return state_obs, reward, done, None
+        return state_obs, reward, done, {}
+
+
+if __name__ == '__main__':
+    env = BlockPushing(render_type="shapes")
+    env.reset()
+    env.render()
+    while True:
+        action = env.action_space.sample()
+        obs, reward, done, info = env.step(action)
+        img = env.render()
+        img = (img * 255).astype(np.uint8)
+        img = img.transpose()
+        img = Image.fromarray(img)
+        img.save("tmp.png")
+
+        break
