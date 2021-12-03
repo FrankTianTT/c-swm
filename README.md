@@ -55,9 +55,6 @@ python data_gen/physics.py --num-episodes 1000 --fname data/balls_eval.h5 --eval
 **2D Shapes**:
 ```bash
 python train.py --dataset data/shapes_train.h5 --encoder small --name shapes
-
-python train.py --dataset data/shapes_train.h5 --encoder small --name shapes_double_num --num-objects 10
-
 python eval.py --dataset data/shapes_eval.h5 --save-folder checkpoints/shapes --num-steps 1
 ```
 
